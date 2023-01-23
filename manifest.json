@@ -3,37 +3,24 @@
   "name": "Invest",
   "description": "Chrome Extension for Zero65 Invest App",
   "version": "4.0.0",
-
-
-
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmHfzDcYMaI547mH+qvkeprjRchVHegnvvZpAcNPerBBg9TpOB4HAlyJSUheO+toNQocPZatS2B5LkLNhZymIyGyJnHpWaumMBM8N3FpQjmRMTAj4oYlMp/Y/eBVOBQ8FQ+BCkbzHjS4tpaWPKEoAkE1S9WfCoCUPxVp8BsV1hKms7Pqo+lghNH12UxGPgZP5RVpi82egBUIIaMsF/rRZm9Lz7PKaM+KjZRJiSnTDeOFsbpvhV0hRiIvHH9WKCXUTXvzFZoB/WourfVv/N40gcYHX5eoweELZvVzTg3L5/LcMQamgSHQNnPnF9AMYFnX/apUp9l1WOSqdmUqdbr4GWQIDAQAB",
   "permissions": [
-    "identity",
     "cookies",
-    "storage",
-    "*://kite.zerodha.com//*",
-    "*://console.zerodha.com//*"
+    "storage"
   ],
-  "oauth2": {
-    "client_id": "220251834863-oruhpgvt7qd4sihht6f2n6a5d07losnp.apps.googleusercontent.com",
-    "scopes": [
-      "https://www.googleapis.com/auth/userinfo.email"
-    ]
-  },
-  "content_security_policy": "script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net/npm/vue/dist/vue.js; object-src 'self'; connect-src 'self' https://invest.zero65.in/api/user/zerodha-ids https://zerodha.zero65.in/api/session;",
-  "browser_action": {
+  "host_permissions": [
+    "https://invest.zero65.in/",
+    "https://kite.zerodha.com/",
+    "https://console.zerodha.com/"
+  ],
+  "action": {
     "default_icon": "money-32.png",
-    "default_popup": "popup.html"
+    "default_popup": "popup/index.html"
   },
   "background": {
-    "service_worker": [
-      "promisified.js",
-      "background.js"
-    ]
+    "service_worker": "background.js",
+    "type": "module" //optional
   },
-
-
-
   "content_scripts": [
     { "js": ["scripts/kite.js"],    "matches": ["*://kite.zerodha.com/*"]    },
     { "js": ["scripts/console.js"], "matches": ["*://console.zerodha.com/*"] }

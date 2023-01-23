@@ -1,30 +1,69 @@
-var userId = 'DEMO';
+var zerodhaId = null;
 var cookies = { timestamp: 0 };
 
 
 
 async function init() {
-  let userIds = await psHttpGet(`https://invest.zero65.in/api/user/zerodha-ids`);
-  if(userId == 'DEMO')
-    userId = userIds[0];
-  chrome.storage.sync.set({ 'userIds': userIds });
+
+  zerodhaId = (await chrome.storage.local.get(['zerodhaId'])).zerodhaId;
+
+  let ret = await fetch('https://invest.zero65.in/api/zerodha/ids', { credentials: 'include' });
+  if(ret.status == 200) {
+
+    let zerodhaIds = (await ret.json()).ids;
+    if(!zerodhaIds || !zerodhaIds.length)
+      zerodhaId = null;
+    else if(!zerodhaId || zerodhaIds.indexOf(zerodhaId) == -1)
+      zerodhaId = zerodhaIds[0];
+
+    chrome.storage.local.set({
+      'zerodhaId' : zerodhaId,
+      'zerodhaIds': zerodhaIds
+    });
+
+  } else if(ret.status == 401 || ret.status == 403) {
+
+    chrome.tabs.create({ url: "https://invest.zero65.in/" });
+
+  } else {
+
+    console.log(ret.status, await ret.text());
+
+  }
+
 }; init(); setInterval(init, 5 * 60 * 1000);
 
 
 
 chrome.runtime.onMessage.addListener(async (data, sender, callback) => {
 
-  console.log(sender.url, data);
-  if((sender.origin != 'https://kite.zerodha.com' || data != 'login') && sender.id != 'bmimjjjamcpohjjfmdhneocpniahbapo')
+  if(sender.id != 'bmimjjjamcpohjjfmdhneocpniahbapo')
     return;
 
-  if(data != 'login') {
-    userId = data;
+  console.log(sender.origin, data);
+
+  if(sender.origin == 'chrome-extension://bmimjjjamcpohjjfmdhneocpniahbapo') {
+    zerodhaId = data;
     cookies.timestamp = 0;
+  } else if(sender.origin == 'https://kite.zerodha.com') {
+    if(data != 'login')
+      return console.log('No action required !');
+    if(!zerodhaId)
+      return console.log('No zerodhaId available !');
+  } else {
+    return console.log('No action required !');
   }
 
+  let ret = await fetch(`https://invest.zero65.in/api/zerodha/session?id=${ zerodhaId }&timestamp=${ cookies.timestamp }`, { credentials: 'include' });
+  
+  if(ret.status == 401 || ret.status == 403)
+    chrome.tabs.create({ url: "https://invest.zero65.in/" });
+  
+  if(ret.status != 200)
+    return console.log(`${ await ret.text() } (${ ret.status }), while fetching cookies`);
 
-  cookies = await psHttpGet(`https://zerodha.zero65.in/api/session?userId=${ userId }&timestamp=${ cookies.timestamp }`);
+  cookies = await ret.json();
+
   console.log(cookies);
 
   let _cookie = (str, host) => {
@@ -56,12 +95,19 @@ chrome.runtime.onMessage.addListener(async (data, sender, callback) => {
     return details;
   };
 
-  for(let c = 0; c < cookies.kite.length; c++)
-    await psSetCookie(_cookie(cookies.kite[c], 'https://kite.zerodha.com'));
+  for(let c = 0; c < cookies.kite.length; c++) {
+    let details = _cookie(cookies.kite[c], 'https://kite.zerodha.com');
+    console.log('Setting cookie ', details);
+    await chrome.cookies.set(details);
+  }
 
-  for(let c = 0; c < cookies.console.length; c++)
-    await psSetCookie(_cookie(cookies.console[c], 'https://console.zerodha.com'));
+  for(let c = 0; c < cookies.console.length; c++) {
+    let details = _cookie(cookies.console[c], 'https://console.zerodha.com');
+    console.log('Setting cookie ', details);
+    await chrome.cookies.set(details);
+  }
 
+  console.log('Reloading tabs ...')
 
   chrome.tabs.query({ url:'*://kite.zerodha.com/*' }, (tabs) => {
     if(!tabs.length)
