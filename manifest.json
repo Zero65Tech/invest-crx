@@ -1,8 +1,11 @@
 {
+  "manifest_version": 3,
   "name": "Invest",
   "description": "Chrome Extension for Zero65 Invest App",
-  "version": "3.0.12",
-  "manifest_version": 2,
+  "version": "4.0.0",
+
+
+
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmHfzDcYMaI547mH+qvkeprjRchVHegnvvZpAcNPerBBg9TpOB4HAlyJSUheO+toNQocPZatS2B5LkLNhZymIyGyJnHpWaumMBM8N3FpQjmRMTAj4oYlMp/Y/eBVOBQ8FQ+BCkbzHjS4tpaWPKEoAkE1S9WfCoCUPxVp8BsV1hKms7Pqo+lghNH12UxGPgZP5RVpi82egBUIIaMsF/rRZm9Lz7PKaM+KjZRJiSnTDeOFsbpvhV0hRiIvHH9WKCXUTXvzFZoB/WourfVv/N40gcYHX5eoweELZvVzTg3L5/LcMQamgSHQNnPnF9AMYFnX/apUp9l1WOSqdmUqdbr4GWQIDAQAB",
   "permissions": [
     "identity",
@@ -23,13 +26,16 @@
     "default_popup": "popup.html"
   },
   "background": {
-    "scripts": [
+    "service_worker": [
       "promisified.js",
       "background.js"
     ]
   },
+
+
+
   "content_scripts": [
-    { "matches": ["*://kite.zerodha.com/*"],    "js": ["content_kite.js"]    },
-    { "matches": ["*://console.zerodha.com/*"], "js": ["content_console.js"] }
+    { "js": ["scripts/kite.js"],    "matches": ["*://kite.zerodha.com/*"]    },
+    { "js": ["scripts/console.js"], "matches": ["*://console.zerodha.com/*"] }
   ]
 }
