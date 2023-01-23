@@ -14,15 +14,14 @@
     "https://console.zerodha.com/"
   ],
   "action": {
-    "default_icon": "money-32.png",
+    "default_icon": "images/money-32.png",
     "default_popup": "popup/index.html"
   },
   "background": {
-    "service_worker": "background.js",
-    "type": "module" //optional
+    "service_worker": "background.js"
   },
   "content_scripts": [
-    { "js": ["scripts/kite.js"],    "matches": ["*://kite.zerodha.com/*"]    },
-    { "js": ["scripts/console.js"], "matches": ["*://console.zerodha.com/*"] }
+    { "js": [ "scripts/kite.js" ],    "matches": [ "https://kite.zerodha.com/*" ]    },
+    { "js": [ "scripts/console.js" ], "matches": [ "https://console.zerodha.com/*" ] }
   ]
 }

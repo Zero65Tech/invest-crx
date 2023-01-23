@@ -27,7 +27,7 @@ async function init() {
 
   } else {
 
-    console.log(ret.status, await ret.text());
+    console.log(`${ await ret.text() } (${ ret.status }), while fetching ids`);
 
   }
 
@@ -47,17 +47,17 @@ chrome.runtime.onMessage.addListener(async (data, sender, callback) => {
     cookies.timestamp = 0;
   } else if(sender.origin == 'https://kite.zerodha.com') {
     if(data != 'login')
-      return console.log('No action required !');
+      return console.log('Invalid data !');
     if(!zerodhaId)
       return console.log('No zerodhaId available !');
   } else {
-    return console.log('No action required !');
+    return console.log('Unsupported origin !');
   }
 
   let ret = await fetch(`https://invest.zero65.in/api/zerodha/session?id=${ zerodhaId }&timestamp=${ cookies.timestamp }`, { credentials: 'include' });
   
   if(ret.status == 401 || ret.status == 403)
-    chrome.tabs.create({ url: "https://invest.zero65.in/" });
+    await chrome.tabs.create({ url: "https://invest.zero65.in/" });
   
   if(ret.status != 200)
     return console.log(`${ await ret.text() } (${ ret.status }), while fetching cookies`);
@@ -95,21 +95,21 @@ chrome.runtime.onMessage.addListener(async (data, sender, callback) => {
     return details;
   };
 
-  for(let c = 0; c < cookies.kite.length; c++) {
-    let details = _cookie(cookies.kite[c], 'https://kite.zerodha.com');
+  for(const cookie of cookies.kite) {
+    let details = _cookie(cookie, 'https://kite.zerodha.com');
     console.log('Setting cookie ', details);
     await chrome.cookies.set(details);
   }
 
-  for(let c = 0; c < cookies.console.length; c++) {
-    let details = _cookie(cookies.console[c], 'https://console.zerodha.com');
+  for(const cookie of cookies.console) {
+    let details = _cookie(cookie, 'https://console.zerodha.com');
     console.log('Setting cookie ', details);
     await chrome.cookies.set(details);
   }
 
   console.log('Reloading tabs ...')
 
-  chrome.tabs.query({ url:'*://kite.zerodha.com/*' }, (tabs) => {
+  chrome.tabs.query({ url:'https://kite.zerodha.com/*' }, (tabs) => {
     if(!tabs.length)
       chrome.tabs.create({ 'url': 'https://kite.zerodha.com/positions', 'active':true });
     else
