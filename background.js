@@ -7,7 +7,7 @@ async function init() {
 
   zerodhaId = (await chrome.storage.local.get(['zerodhaId'])).zerodhaId;
 
-  let ret = await fetch('https://invest.zero65.in/api/zerodha/ids', { credentials: 'include' });
+  let ret = await fetch('https://invest-v3.zero65.in/api/zerodha/ids', { credentials: 'include' });
   if(ret.status == 200) {
 
     let zerodhaIds = (await ret.json()).ids;
@@ -23,7 +23,7 @@ async function init() {
 
   } else if(ret.status == 401 || ret.status == 403) {
 
-    chrome.tabs.create({ url: "https://invest.zero65.in/" });
+    chrome.tabs.create({ url: "https://invest-v3.zero65.in/" });
 
   } else {
 
@@ -54,10 +54,10 @@ chrome.runtime.onMessage.addListener(async (data, sender, callback) => {
     return console.log('Unsupported origin !');
   }
 
-  let ret = await fetch(`https://invest.zero65.in/api/zerodha/session?id=${ zerodhaId }&timestamp=${ cookies.timestamp }`, { credentials: 'include' });
+  let ret = await fetch(`https://invest-v3.zero65.in/api/zerodha/session?id=${ zerodhaId }&timestamp=${ cookies.timestamp }`, { credentials: 'include' });
   
   if(ret.status == 401 || ret.status == 403)
-    await chrome.tabs.create({ url: "https://invest.zero65.in/" });
+    await chrome.tabs.create({ url: "https://invest-v3.zero65.in/" });
   
   if(ret.status != 200)
     return console.log(`${ await ret.text() } (${ ret.status }), while fetching cookies`);

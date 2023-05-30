@@ -24,8 +24,8 @@
   } else {
 
     let a = document.createElement('a');
-    a.href = 'https://invest.zero65.in/';
-    a.innerText = 'https://invest.zero65.in/';
+    a.href = 'https://invest-v3.zero65.in/';
+    a.innerText = 'https://invest-v3.zero65.in/';
 
     let td = document.createElement('td');
     td.style = 'padding:5px;'
