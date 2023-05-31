@@ -1,18 +1,18 @@
 (async () => {
 
-  let zerodhaIds = (await chrome.storage.local.get(['zerodhaIds'])).zerodhaIds;
+  let zerodhaAccounts = (await chrome.storage.local.get(['zerodhaAccounts'])).zerodhaAccounts;
 
   let tr = document.querySelector('body > table > tbody > tr');
 
-  if(zerodhaIds && zerodhaIds.length) {
+  if(zerodhaAccounts && zerodhaAccounts.length) {
 
-    for(const zerodhaId of zerodhaIds) {
+    for(const zerodhaAccount of zerodhaAccounts) {
 
       let button = document.createElement('button');
-      button.innerText = zerodhaId;
+      button.innerText = zerodhaAccount.name;
       button.className = 'btn btn-primary';
 
-      button.onclick = () => chrome.runtime.sendMessage(zerodhaId);
+      button.onclick = () => chrome.runtime.sendMessage(zerodhaAccount.id);
 
       let td = document.createElement('td');
       td.style = 'padding:5px;'
@@ -24,8 +24,10 @@
   } else {
 
     let a = document.createElement('a');
-    a.href = 'https://invest-v3.zero65.in/';
-    a.innerText = 'https://invest-v3.zero65.in/';
+    a.href = '#';
+    a.innerText = 'https://invest.zero65.in/';
+
+    a.onclick = () => chrome.tabs.create({ url: "https://invest.zero65.in/" });
 
     let td = document.createElement('td');
     td.style = 'padding:5px;'

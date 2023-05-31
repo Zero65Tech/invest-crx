@@ -2,14 +2,14 @@
   "manifest_version": 3,
   "name": "Invest",
   "description": "Chrome Extension for Zero65 Invest App",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmHfzDcYMaI547mH+qvkeprjRchVHegnvvZpAcNPerBBg9TpOB4HAlyJSUheO+toNQocPZatS2B5LkLNhZymIyGyJnHpWaumMBM8N3FpQjmRMTAj4oYlMp/Y/eBVOBQ8FQ+BCkbzHjS4tpaWPKEoAkE1S9WfCoCUPxVp8BsV1hKms7Pqo+lghNH12UxGPgZP5RVpi82egBUIIaMsF/rRZm9Lz7PKaM+KjZRJiSnTDeOFsbpvhV0hRiIvHH9WKCXUTXvzFZoB/WourfVv/N40gcYHX5eoweELZvVzTg3L5/LcMQamgSHQNnPnF9AMYFnX/apUp9l1WOSqdmUqdbr4GWQIDAQAB",
   "permissions": [
     "cookies",
     "storage"
   ],
   "host_permissions": [
-    "https://invest-v3.zero65.in/",
+    "https://invest.zero65.in/",
     "https://kite.zerodha.com/",
     "https://console.zerodha.com/"
   ],

@@ -7,27 +7,24 @@ async function init() {
 
   zerodhaId = (await chrome.storage.local.get(['zerodhaId'])).zerodhaId;
 
-  let ret = await fetch('https://invest-v3.zero65.in/api/zerodha/ids', { credentials: 'include' });
+  let ret = await fetch('https://invest.zero65.in/api/zerodha/accounts', { credentials: 'include' });
   if(ret.status == 200) {
 
-    let zerodhaIds = (await ret.json()).ids;
-    if(!zerodhaIds || !zerodhaIds.length)
+    let zerodhaAccounts = await ret.json();
+    if(!zerodhaAccounts || zerodhaAccounts.length == 0)
       zerodhaId = null;
-    else if(!zerodhaId || zerodhaIds.indexOf(zerodhaId) == -1)
-      zerodhaId = zerodhaIds[0];
+    else if(!zerodhaId || zerodhaAccounts.filter(account => account.id == zerodhaId).length == 0)
+      zerodhaId = zerodhaAccounts[0].id;
 
-    chrome.storage.local.set({
-      'zerodhaId' : zerodhaId,
-      'zerodhaIds': zerodhaIds
-    });
+    chrome.storage.local.set({ zerodhaId, zerodhaAccounts });
 
   } else if(ret.status == 401 || ret.status == 403) {
 
-    chrome.tabs.create({ url: "https://invest-v3.zero65.in/" });
+    chrome.tabs.create({ url: "https://invest.zero65.in/" });
 
   } else {
 
-    console.log(`${ await ret.text() } (${ ret.status }), while fetching ids`);
+    console.log(`${ await ret.text() } (${ ret.status }), while fetching accounts.`);
 
   }
 
@@ -45,6 +42,7 @@ chrome.runtime.onMessage.addListener(async (data, sender, callback) => {
   if(sender.origin == 'chrome-extension://bmimjjjamcpohjjfmdhneocpniahbapo') {
     zerodhaId = data;
     cookies.timestamp = 0;
+    chrome.storage.local.set({ zerodhaId });
   } else if(sender.origin == 'https://kite.zerodha.com') {
     if(data != 'login')
       return console.log('Invalid data !');
@@ -54,10 +52,10 @@ chrome.runtime.onMessage.addListener(async (data, sender, callback) => {
     return console.log('Unsupported origin !');
   }
 
-  let ret = await fetch(`https://invest-v3.zero65.in/api/zerodha/session?id=${ zerodhaId }&timestamp=${ cookies.timestamp }`, { credentials: 'include' });
+  let ret = await fetch(`https://invest.zero65.in/api/zerodha/session?id=${ zerodhaId }&timestamp=${ cookies.timestamp }`, { credentials: 'include' });
   
   if(ret.status == 401 || ret.status == 403)
-    await chrome.tabs.create({ url: "https://invest-v3.zero65.in/" });
+    await chrome.tabs.create({ url: "https://invest.zero65.in/" });
   
   if(ret.status != 200)
     return console.log(`${ await ret.text() } (${ ret.status }), while fetching cookies`);
