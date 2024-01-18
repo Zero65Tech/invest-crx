@@ -52,7 +52,7 @@ chrome.runtime.onMessage.addListener(async (data, sender, callback) => {
     return console.log('Unsupported origin !');
   }
 
-  let ret = await fetch(`https://invest.zero65.in/api/zerodha/session?id=${ zerodhaId }&timestamp=${ cookies.timestamp }`, { credentials: 'include' });
+  let ret = await fetch(`https://invest.zero65.in/api/zerodha/session?id=${ zerodhaId.replace('#','%23') }&timestamp=${ cookies.timestamp }`, { credentials: 'include' });
   
   if(ret.status == 401 || ret.status == 403)
     await chrome.tabs.create({ url: "https://invest.zero65.in/" });
